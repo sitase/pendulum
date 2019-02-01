@@ -14,6 +14,9 @@ import (
 	"github.com/go-chi/chi"
 
 	"github.com/titpetric/pendulum"
+
+	"github.com/zserge/webview"
+
 )
 
 // Serves index.html in case the requested file isn't found (or some other os.Stat error)
@@ -113,4 +116,9 @@ func main() {
 	r := chi.NewRouter()
 	MountRoutes(r, api)
 	http.Serve(listener, r)
+
+	// Open wikipedia in a 800x600 resizable window
+webview.Open("Minimal webview example",
+	fmt.Sprintf("http://localhost%s",*addr), 800, 600, true)
+
 }

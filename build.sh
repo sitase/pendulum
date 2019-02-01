@@ -1,10 +1,12 @@
 #!/bin/bash
 set -e
-PROJECT=$(basename $(dirname $(readlink -f $0)))
+#PROJECT=$(basename $(dirname $(readlink -f $0)))
+SCRIPT_NAME=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+PROJECT=$(cd $(dirname "$0") && pwd);
 
 go generate
 
-NAMES=$(ls cmd/* -d | xargs -n1 basename)
+NAMES=$(ls -d cmd/* | xargs -n1 basename)
 for NAME in $NAMES; do
 	OSES=${OSS:-"linux darwin windows"}
 	ARCHS=${ARCHS:-"amd64 386"}
