@@ -77,7 +77,7 @@ func handleError(err error, message string) {
 
 func main() {
 	var (
-		addr     = flag.String("addr", ":8080", "Address for server")
+		addr     = flag.String("addr", "localhost:8080", "Address for server")
 		contents = flag.String("contents", ".", "Folder for display")
 	)
 	flag.Parse()
@@ -112,13 +112,16 @@ func main() {
 	listener, err := net.Listen("tcp", *addr)
 	handleError(err, "Can't listen on addr "+*addr)
 
-	// mount routes
-	r := chi.NewRouter()
-	MountRoutes(r, api)
-	http.Serve(listener, r)
 
-	// Open wikipedia in a 800x600 resizable window
-webview.Open("Minimal webview example",
-	fmt.Sprintf("http://localhost%s",*addr), 800, 600, true)
+	defer listener.Close()
+	go func() {
+		// mount routes
+		r := chi.NewRouter()
+		MountRoutes(r, api)
+		log.Fatal(http.Serve(listener, r))
+	}()
+
+	log.Println("listening at "+listener.Addr().String())
+	webview.Open("Hello", "http://"+listener.Addr().String(), 800, 600, true)
 
 }
